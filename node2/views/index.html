@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <h1>Список задач</h1>
+
+    <form action="/add-task" method="POST" class="task-form">
+      <input type="text" name="task" required placeholder="Новая задача" />
+      <button type="submit" class="add-btn">Добавить задачу</button>
+    </form>
+
+    <ul id="tasklist"></ul>
+
+    <script>
+      async function fetchTasks() {
+        const response = await fetch("/tasks");
+        const tasks = await response.json();
+        const taskList = document.getElementById("tasklist");
+        taskList.innerHTML = "";
+
+        tasks.forEach((task) => {
+          const listItem = document.createElement("li");
+          if (task.completed) {
+            listItem.classList.add("completed");
+          }
+
+          listItem.innerHTML = `
+                    <span>${task.text}</span>
+                    <div class="task-actions">
+                        <form action="/toggle-task/${
+                          task.id
+                        }" method="POST" style="display:inline;">
+                            <button type="submit" class="toggle-btn">
+                                ${task.completed ? "Отменить" : "Выполнить"}
+                            </button>
+                        </form>
+                        <form action="/delete-task/${
+                          task.id
+                        }" method="POST" style="display:inline;">
+                            <button type="submit" class="delete-btn">Удалить</button>
+                        </form>
+                    </div>
+                `;
+
+          taskList.appendChild(listItem);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchTasks);
+    </script>
+  </body>
+</html>
