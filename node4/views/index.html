@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX с Node.js</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .output {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            min-height: 20px;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <h1>AJAX с Node.js</h1>
+    
+    <div class="section">
+        <h2>Получить сообщение от сервера</h2>
+        <button id="getMessage">Получить сообщение</button>
+        <div id="output" class="output"></div>
+    </div>
+
+
+    <div class="section">
+        <h2>Эхо-запрос</h2>
+        <form id="echoForm">
+            <input type="text" id="inputText" placeholder="Введите текст" required>
+            <button type="submit">Отправить</button>
+        </form>
+        <div id="echoOutput" class="output"></div>
+    </div>
+
+
+    <div class="section">
+        <h2>3. Калькулятор</h2>
+        <form id="calcForm">
+            <input type="number" id="num1" placeholder="Первое число" required>
+            <select id="operation" required>
+                <option value="add">Сложение (+)</option>
+                <option value="subtract">Вычитание (-)</option>
+                <option value="multiply">Умножение (×)</option>
+                <option value="divide">Деление (÷)</option>
+            </select>
+            <input type="number" id="num2" placeholder="Второе число" required>
+            <button type="submit">Вычислить</button>
+        </form>
+        <div id="calcOutput" class="output"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
