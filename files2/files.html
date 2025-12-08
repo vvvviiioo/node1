@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Список файлов</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📋 Список файлов</h1>
+        <a href="/" class="back-button">⬅ На главную</a>
+        <a href="/avatar" class="link-button avatar-link"
+          >👤 Управление аватаркой</a
+        >
+      </div>
+
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Всего файлов:</span>
+          <span class="stat-value" id="totalFiles">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Общий размер:</span>
+          <span class="stat-value" id="totalSize">0 Б</span>
+        </div>
+      </div>
+
+      <div class="files-list" id="filesList">
+        <div class="loading">Загрузка списка файлов...</div>
+      </div>
+    </div>
+
+    <script>
+      async function loadFiles() {
+        try {
+          const response = await fetch("/api/files");
+          const files = await response.json();
+
+          const filesList = document.getElementById("filesList");
+          const totalFiles = document.getElementById("totalFiles");
+          const totalSize = document.getElementById("totalSize");
+
+          if (files.error) {
+            filesList.innerHTML = `<div class="error">${files.error}</div>`;
+            return;
+          }
+
+          totalFiles.textContent = files.length;
+
+          const totalBytes = files.reduce(
+            (sum, file) => sum + (file.size || 0),
+            0
+          );
+          totalSize.textContent = formatSize(totalBytes);
+
+          if (files.length === 0) {
+            filesList.innerHTML =
+              '<div class="empty">Нет загруженных файлов</div>';
+            return;
+          }
+
+          let html = "";
+          files.forEach((file) => {
+            html += `
+                        <div class="file-item" data-id="${file.id}">
+                            <div class="file-info">
+                                <div class="file-name">${escapeHtml(
+                                  file.name
+                                )}</div>
+                                <div class="file-details">
+                                    <span class="file-size">${
+                                      file.size_formatted ||
+                                      formatSize(file.size)
+                                    }</span>
+                                    <span class="file-date">${
+                                      file.upload_date
+                                    }</span>
+                                    <span class="file-type">${
+                                      file.type || "Неизвестно"
+                                    }</span>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <a href="/download/${
+                                  file.id
+                                }" class="action-button download">
+                                    📥 Скачать
+                                </a>
+                                <button onclick="deleteFile(${
+                                  file.id
+                                })" class="action-button delete">
+                                    🗑 Удалить
+                                </button>
+                            </div>
+                        </div>
+                    `;
+          });
+
+          filesList.innerHTML = html;
+        } catch (error) {
+          console.error("Ошибка:", error);
+          document.getElementById("filesList").innerHTML =
+            '<div class="error">Ошибка при загрузке списка файлов</div>';
+        }
+      }
+
+      async function deleteFile(id) {
+        if (!confirm("Удалить этот файл?")) return;
+
+        try {
+          const response = await fetch(`/api/files/${id}`, {
+            method: "DELETE",
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            document.querySelector(`.file-item[data-id="${id}"]`).remove();
+
+            const totalFiles = document.getElementById("totalFiles");
+            totalFiles.textContent = parseInt(totalFiles.textContent) - 1;
+
+            showMessage("Файл удален", "success");
+          } else {
+            showMessage(result.error || "Ошибка при удалении", "error");
+          }
+        } catch (error) {
+          console.error("Ошибка:", error);
+          showMessage("Ошибка при удалении файла", "error");
+        }
+      }
+
+      function formatSize(bytes) {
+        if (!bytes) return "0 Б";
+        const k = 1024;
+        const sizes = ["Б", "КБ", "МБ", "ГБ"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function showMessage(text, type) {
+        const message = document.createElement("div");
+        message.className = `message ${type}`;
+        message.textContent = text;
+        message.style.position = "fixed";
+        message.style.top = "20px";
+        message.style.right = "20px";
+        message.style.padding = "10px 20px";
+        message.style.borderRadius = "5px";
+        message.style.zIndex = "1000";
+
+        document.body.appendChild(message);
+
+        setTimeout(() => {
+          message.remove();
+        }, 3000);
+      }
+
+      document.addEventListener("DOMContentLoaded", loadFiles);
+
+      setInterval(loadFiles, 30000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление аватаркой</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>👤 Управление аватаркой</h1>
+        <a href="/" class="back-button">⬅ На главную</a>
+      </div>
+
+      <div class="avatar-section">
+        <div class="avatar-preview" id="avatarPreview">
+          <div class="avatar-placeholder">
+            <span>Аватарка не загружена</span>
+          </div>
+        </div>
+
+        <div class="avatar-controls">
+          <div class="file-input">
+            <input
+              type="file"
+              name="avatar"
+              id="avatarInput"
+              accept="image/*"
+              required
+            />
+            <label for="avatarInput" class="file-label">
+              <span class="file-button">Выберите изображение</span>
+              <span class="file-name" id="avatarFileName">Файл не выбран</span>
+            </label>
+          </div>
+
+          <div class="button-group">
+            <button
+              onclick="uploadAvatar()"
+              class="upload-button"
+              id="uploadBtn"
+            >
+              📤 Загрузить аватарку
+            </button>
+            <button
+              onclick="deleteAvatar()"
+              class="action-button delete"
+              id="deleteBtn"
+              disabled
+            >
+              🗑 Удалить аватарку
+            </button>
+          </div>
+
+          <div class="info">
+            <p>✅ Разрешены файлы: JPEG, PNG, GIF, WebP</p>
+            <p>📏 Максимальный размер: 5MB</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="avatar-info" id="avatarInfo">
+        <div class="loading">Загрузка информации об аватарке...</div>
+      </div>
+
+      <div class="links">
+        <a href="/files" class="link-button">📋 Посмотреть все файлы</a>
+      </div>
+
+      <div id="message" class="message hidden"></div>
+    </div>
+
+    <script>
+      let currentAvatar = null;
+
+      async function loadAvatar() {
+        try {
+          const response = await fetch("/api/avatar");
+          const avatar = await response.json();
+
+          const avatarInfo = document.getElementById("avatarInfo");
+          const avatarPreview = document.getElementById("avatarPreview");
+          const deleteBtn = document.getElementById("deleteBtn");
+
+          if (avatar.exists) {
+            currentAvatar = avatar;
+
+            avatarPreview.innerHTML = `
+                        <img src="${avatar.url}" alt="Аватарка" class="avatar-image">
+                    `;
+
+            avatarInfo.innerHTML = `
+                        <div class="avatar-details">
+                            <h3>Информация об аватарке:</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">Имя файла:</span>
+                                <span class="detail-value">${escapeHtml(
+                                  avatar.filename
+                                )}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Размер:</span>
+                                <span class="detail-value">${
+                                  avatar.size_formatted
+                                }</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Тип:</span>
+                                <span class="detail-value">${avatar.type}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Загружена:</span>
+                                <span class="detail-value">${
+                                  avatar.upload_date
+                                }</span>
+                            </div>
+                        </div>
+                    `;
+
+            deleteBtn.disabled = false;
+          } else {
+            avatarPreview.innerHTML = `
+                        <div class="avatar-placeholder">
+                            <span>Аватарка не загружена</span>
+                        </div>
+                    `;
+
+            avatarInfo.innerHTML = `
+                        <div class="avatar-details">
+                            <h3>Аватарка не установлена</h3>
+                            <p>Загрузите изображение, чтобы установить аватарку</p>
+                        </div>
+                    `;
+
+            deleteBtn.disabled = true;
+          }
+        } catch (error) {
+          console.error("Ошибка:", error);
+          document.getElementById("avatarInfo").innerHTML =
+            '<div class="error">Ошибка при загрузке информации об аватарке</div>';
+        }
+      }
+
+      async function uploadAvatar() {
+        const fileInput = document.getElementById("avatarInput");
+        const uploadBtn = document.getElementById("uploadBtn");
+
+        if (!fileInput.files[0]) {
+          showMessage("Пожалуйста, выберите файл", "error");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("avatar", fileInput.files[0]);
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "📤 Загрузка...";
+
+        try {
+          const response = await fetch("/api/avatar", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showMessage("Аватарка успешно загружена!", "success");
+            fileInput.value = "";
+            document.getElementById("avatarFileName").textContent =
+              "Файл не выбран";
+            await loadAvatar();
+          } else {
+            showMessage(
+              result.error || "Ошибка при загрузке аватарки",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Ошибка:", error);
+          showMessage("Ошибка при загрузке аватарки", "error");
+        } finally {
+          uploadBtn.disabled = false;
+          uploadBtn.textContent = "📤 Загрузить аватарку";
+        }
+      }
+
+      async function deleteAvatar() {
+        if (!currentAvatar) return;
+
+        if (!confirm("Удалить аватарку?")) return;
+
+        try {
+          const response = await fetch("/api/avatar", {
+            method: "DELETE",
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showMessage("Аватарка удалена", "success");
+            currentAvatar = null;
+            await loadAvatar();
+          } else {
+            showMessage(
+              result.error || "Ошибка при удалении аватарки",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Ошибка:", error);
+          showMessage("Ошибка при удалении аватарки", "error");
+        }
+      }
+
+      document
+        .getElementById("avatarInput")
+        .addEventListener("change", function (e) {
+          const fileName = this.files[0]
+            ? this.files[0].name
+            : "Файл не выбран";
+          document.getElementById("avatarFileName").textContent = fileName;
+
+          if (this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const preview = document.getElementById("avatarPreview");
+              preview.innerHTML = `<img src="${e.target.result}" alt="Предпросмотр" class="avatar-image">`;
+            };
+            reader.readAsDataURL(this.files[0]);
+          }
+        });
+
+      function showMessage(text, type) {
+        const messageDiv = document.getElementById("message");
+        messageDiv.textContent = text;
+        messageDiv.className = `message ${type}`;
+        messageDiv.classList.remove("hidden");
+
+        setTimeout(() => {
+          messageDiv.classList.add("hidden");
+        }, 3000);
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      document.addEventListener("DOMContentLoaded", loadAvatar);
+    </script>
+  </body>
+</html>

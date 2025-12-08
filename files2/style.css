@@ -1,0 +1,366 @@
+/* Общие базовые стили для всех страниц */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #f3f5fb;
+  color: #1f2937;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 28px;
+  text-align: center;
+}
+
+.upload-box,
+.files-list,
+.avatar-info {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+}
+
+.upload-box {
+  margin-bottom: 24px;
+}
+
+.file-input {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.file-input input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.file-label:hover {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.file-name {
+  color: #475569;
+}
+
+.upload-button,
+.action-button,
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  text-decoration: none;
+}
+
+.upload-button {
+  width: 100%;
+  background: #10b981;
+  color: #fff;
+}
+
+.upload-button:hover {
+  background: #0ea371;
+}
+
+.action-button.download {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.action-button.delete {
+  background: #ef4444;
+  color: #fff;
+}
+
+.action-button:hover,
+.link-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.link-button {
+  background: #6366f1;
+  color: #fff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.back-button {
+  text-decoration: none;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-label {
+  color: #475569;
+}
+
+.stat-value {
+  display: block;
+  font-weight: 700;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.files-list .file-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.file-info .file-name {
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.file-details {
+  color: #475569;
+  font-size: 14px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.message {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.message.success {
+  background: #ecfdf3;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.message.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecdd3;
+}
+
+.message.hidden {
+  display: none;
+}
+
+.loading,
+.empty,
+.error {
+  text-align: center;
+  padding: 12px;
+  color: #475569;
+}
+
+/* Стили для аватарки */
+
+.avatar-section {
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 15px;
+  border: 3px dashed #dee2e6;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.avatar-preview {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid #667eea;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-controls {
+  width: 100%;
+  max-width: 500px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button-group .upload-button {
+  flex: 2;
+}
+
+.button-group .action-button {
+  flex: 1;
+}
+
+.avatar-info {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.avatar-details h3 {
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.info {
+  background: #e9f7fe;
+  border: 1px solid #b6e0fe;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.info p {
+  margin: 5px 0;
+}
+
+/* Добавить иконку аватарки в навигацию */
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.link-button.avatar-link {
+  background: #ff6b6b;
+}
+
+.link-button.avatar-link:hover {
+  background: #ff5252;
+}

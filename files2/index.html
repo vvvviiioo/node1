@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Загрузка файлов</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>📁 Загрузка файлов</h1>
+
+      <div class="upload-box">
+        <form
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          id="uploadForm"
+        >
+          <div class="file-input">
+            <input type="file" name="filedata" id="fileInput" required />
+            <label for="fileInput" class="file-label">
+              <span class="file-button">Выберите файл</span>
+              <span class="file-name" id="fileName">Файл не выбран</span>
+            </label>
+          </div>
+
+          <button type="submit" class="upload-button">📤 Загрузить файл</button>
+        </form>
+
+        <div id="message" class="message hidden"></div>
+      </div>
+
+      <div class="links">
+        <a href="/files" class="link-button">📋 Посмотреть все файлы</a>
+        <a href="/avatar" class="link-button avatar-link"
+          >👤 Управление аватаркой</a
+        >
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const fileName = this.files[0]
+            ? this.files[0].name
+            : "Файл не выбран";
+          document.getElementById("fileName").textContent = fileName;
+        });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("success") === "true") {
+        showMessage("Файл успешно загружен!", "success");
+      }
+
+      function showMessage(text, type) {
+        const messageDiv = document.getElementById("message");
+        messageDiv.textContent = text;
+        messageDiv.className = `message ${type}`;
+        messageDiv.classList.remove("hidden");
+
+        setTimeout(() => {
+          messageDiv.classList.add("hidden");
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
